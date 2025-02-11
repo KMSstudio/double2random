@@ -58,16 +58,19 @@ def plot_histogram(data_list):
 def plot_qqplots(data_list):
     sample_data = np.random.choice(np.concatenate([arr.flatten() for arr in data_list]), size=5000, replace=False)
     
-    fig, axs = plt.subplots(2, 3, figsize=(18, 12))
-    plt.subplots_adjust(hspace=0.4)  # Adjust spacing to prevent overlap
+    fig, axs = plt.subplots(3, 3, figsize=(22, 18))  # Increase figure height
+    plt.subplots_adjust(hspace=0.9)  # Increase vertical spacing to prevent overlap
     
     distributions = [
         ("Normal", "norm", {}),
-        ("Gamma", "gamma", {"sparams": (2,)}),
-        ("Exponential", "expon", {}),
-        ("Student's t", "t", {"sparams": (3,)}),
-        ("Beta", "beta", {"sparams": (2, 5)}),
-        ("Generalized t", "t", {"sparams": (5,)})
+        ("Gamma (k=2)", "gamma", {"sparams": (2,)}),
+        ("Gamma (k=5)", "gamma", {"sparams": (5,)}),
+        ("Student's t (df=2)", "t", {"sparams": (2,)}),
+        ("Student's t (df=5)", "t", {"sparams": (5,)}),
+        ("Student's t (df=10)", "t", {"sparams": (10,)}),
+        ("Beta (2,5)", "beta", {"sparams": (2, 5)}),
+        ("Beta (5,2)", "beta", {"sparams": (5, 2)}),
+        ("Generalized t (df=5)", "t", {"sparams": (5,)})
     ]
     
     for ax, (title, dist, params) in zip(axs.flatten(), distributions):
@@ -75,21 +78,31 @@ def plot_qqplots(data_list):
         ax.get_lines()[1].set_color('red')  # Make the reference line red
         ax.get_lines()[0].set_color('black')  # Make the data points black
         ax.get_lines()[0].set_markersize(3)  # Reduce point size
-        ax.set_title(f"Q-Q Plot of EEG Data ({title})", fontsize=12)
-        ax.set_xlabel("Theoretical Quantiles", fontsize=10, labelpad=10)
-        ax.set_ylabel("Ordered Values", fontsize=10, labelpad=10)
+        ax.set_title(f"{title}", fontsize=14, pad=15)  # Increase padding
+        ax.set_xlabel("Theoretical Quantiles", fontsize=12, labelpad=15)  # Increase label padding
+        ax.set_ylabel("Ordered Values", fontsize=12, labelpad=15)  # Increase label padding
         ax.grid()
     
     plt.show()
 
 def test_normality(data_list):
-    sample_data = np.random.choice(np.concatenate([arr.flatten() for arr in data_list]), size=5000, replace=False)
-    
+    all_data = np.concatenate([arr.flatten() for arr in data_list])
+    sample_data = np.random.choice(all_data, size=5000, replace=False)
+
+    # 평균과 분산 계산
+    mean_value = np.mean(all_data)
+    variance_value = np.var(all_data, ddof=1)  # ddof=1을 사용하여 표본 분산 계산
+
+    # 정규성 검정
     shapiro_test = stats.shapiro(sample_data)
-    ks_test = stats.kstest(sample_data, 'norm', args=(np.mean(sample_data), np.std(sample_data)))
-    
-    print(f"Shapiro-Wilk test: Statistic={shapiro_test.statistic}, p-value={shapiro_test.pvalue}")
-    print(f"Kolmogorov-Smirnov test: Statistic={ks_test.statistic}, p-value={ks_test.pvalue}")
+    ks_test = stats.kstest(sample_data, 'norm', args=(mean_value, np.sqrt(variance_value)))
+
+    # 결과 출력
+    print(f"Acerage: {mean_value:.6f}")
+    print(f"Variance: {variance_value:.6f}")
+    print(f"Shapiro-Wilk test: Statistic={shapiro_test.statistic:.6f}, p-value={shapiro_test.pvalue:.6f}")
+    print(f"Kolmogorov-Smirnov test: Statistic={ks_test.statistic:.6f}, p-value={ks_test.pvalue:.6f}")
+
 
 if __name__ == "__main__":
     data_list, df = load_eeg_data()

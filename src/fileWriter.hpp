@@ -12,7 +12,7 @@ private:
     std::ofstream file;
     std::string filePath;
     int outputBit;
-    uint32_t buffer;
+    uint64_t buffer;
     int bufferBitCount;
 
 public:
