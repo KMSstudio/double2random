@@ -46,9 +46,12 @@ int doubleEncoder::encode(double val) {
         double boundedVal = std::min(1.0, std::max(0.0, val)); // 0~1 union
         fractionBits = static_cast<uint32_t>(boundedVal * (1 << 23));
     }
-    else { 
+    else if (encodeType == EncodeType::Exponent) { 
         uint64_t bitPattern = *reinterpret_cast<uint64_t*>(&val);
         fractionBits = static_cast<uint32_t>(bitPattern & ((1ULL << 23) - 1)); // ext fraction
+    }
+    else {
+        return static_cast<uint32_t>(val * (1ULL << write_len)) & ((1ULL << write_len)-1);
     }
 
     return (fractionBits >> write_from) & ((1 << write_len) - 1);

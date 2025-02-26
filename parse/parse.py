@@ -70,7 +70,7 @@ def plot_qqplots(data_list):
         ("Student's t (df=10)", "t", {"sparams": (10,)}),
         ("Beta (2,5)", "beta", {"sparams": (2, 5)}),
         ("Beta (5,2)", "beta", {"sparams": (5, 2)}),
-        ("Generalized t (df=5)", "t", {"sparams": (5,)})
+        ("Cauchy", "cauchy", {})
     ]
     
     for ax, (title, dist, params) in zip(axs.flatten(), distributions):
@@ -102,7 +102,6 @@ def test_normality(data_list):
     print(f"Variance: {variance_value:.6f}")
     print(f"Shapiro-Wilk test: Statistic={shapiro_test.statistic:.6f}, p-value={shapiro_test.pvalue:.6f}")
     print(f"Kolmogorov-Smirnov test: Statistic={ks_test.statistic:.6f}, p-value={ks_test.pvalue:.6f}")
-
 
 if __name__ == "__main__":
     data_list, df = load_eeg_data()
